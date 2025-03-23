@@ -231,7 +231,7 @@ class ClientService:
                 detail=f"Client with id {client_id} not found",
             )
 
-        update_data = client_update.dict(exclude_unset=True)
+        update_data = client_update.model_dump(exclude_unset=True)
         for field, value in update_data.items():
             setattr(client, field, value)
 

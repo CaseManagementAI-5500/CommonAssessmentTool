@@ -7,7 +7,8 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from app.models import User, UserRole
 from passlib.context import CryptContext
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
+from pydantic import field_validator
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -18,7 +19,7 @@ class UserCreate(BaseModel):
     password: str
     role: UserRole
 
-    @validator("role")
+    @field_validator('role')
     def validate_role(cls, v):
         if v not in [UserRole.admin, UserRole.case_worker]:
             raise ValueError("Role must be either admin or case_worker")
