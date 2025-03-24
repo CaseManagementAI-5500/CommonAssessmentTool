@@ -3,15 +3,19 @@ Client service module handling all database operations for clients.
 Provides CRUD operations and business logic for client management.
 """
 
+from typing import Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
 from fastapi import HTTPException, status
-from typing import List, Optional, Dict, Any
+
 from app.models import Client, ClientCase, User
-from app.clients.schema import ClientUpdate, ServiceUpdate, ServiceResponse
+from app.clients.schema import ClientUpdate, ServiceUpdate
 
 
 class ClientService:
+    """
+    Service class handling all client-related database operations and business logic.
+    Provides methods for CRUD operations and complex client queries.
+    """
     @staticmethod
     def get_client(db: Session, client_id: int):
         """Get a specific client by ID"""
@@ -75,7 +79,7 @@ class ClientService:
         """Get clients filtered by any combination of criteria"""
         query = db.query(Client)
 
-        if education_level is not None and not (1 <= education_level <= 14):
+        if education_level is not None and not 1 <= education_level <= 14:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Education level must be between 1 and 14",
@@ -153,7 +157,7 @@ class ClientService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error retrieving clients: {str(e)}",
-            )
+            ) from e
 
     @staticmethod
     def get_clients_by_services(db: Session, **service_filters: Optional[bool]):
@@ -173,7 +177,7 @@ class ClientService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error retrieving clients: {str(e)}",
-            )
+            ) from e
 
     @staticmethod
     def get_client_services(db: Session, client_id: int):
@@ -191,7 +195,7 @@ class ClientService:
     @staticmethod
     def get_clients_by_success_rate(db: Session, min_rate: int = 70):
         """Get clients with success rate at or above the specified percentage"""
-        if not (0 <= min_rate <= 100):
+        if not 0 <= min_rate <= 100:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Success rate must be between 0 and 100",
