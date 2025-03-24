@@ -4,14 +4,17 @@ Defines schemas for client data, predictions, and API responses.
 """
 
 # Standard library imports
-from pydantic import BaseModel, Field, validator
-from typing import Optional, List
 from enum import IntEnum
-from app.models import UserRole
+from typing import Optional, List
 
+from pydantic import BaseModel, Field
 
 # Enums for validation
 class Gender(IntEnum):
+    """
+    Enumeration for gender values in the system.
+    Used for consistent gender representation across the application.
+    """
     MALE = 1
     FEMALE = 2
 
@@ -49,6 +52,10 @@ class PredictionInput(BaseModel):
 
 
 class ClientBase(BaseModel):
+    """
+    Base client model containing all common client fields.
+    Serves as the foundation for client-related schemas.
+    """
     age: int = Field(ge=18, description="Age of client, must be 18 or older")
     gender: Gender = Field(description="Gender: 1 for male, 2 for female")
     work_experience: int = Field(ge=0, description="Years of work experience")
@@ -83,6 +90,7 @@ class ClientBase(BaseModel):
     )
 
     class Config:
+        """Configuration for the ClientBase model"""
         json_schema_extra = {
             "example": {
                 "age": 25,
@@ -114,13 +122,22 @@ class ClientBase(BaseModel):
 
 
 class ClientResponse(ClientBase):
+    """
+    Response model for client data that includes the client ID.
+    Used when returning client information in API responses.
+    """
     id: int
 
     class Config:
+        """Configuration for the ClientResponse model"""
         from_attributes = True
 
 
 class ClientUpdate(BaseModel):
+    """
+    Schema for client update operations.
+    All fields are optional to allow partial updates.
+    """
     age: Optional[int] = Field(None, ge=18)
     gender: Optional[Gender] = None
     work_experience: Optional[int] = Field(None, ge=0)
@@ -148,6 +165,10 @@ class ClientUpdate(BaseModel):
 
 
 class ServiceResponse(BaseModel):
+    """
+    Response model for service-related data.
+    Contains information about various services provided to clients.
+    """
     client_id: int
     user_id: int
     employment_assistance: bool
@@ -160,10 +181,15 @@ class ServiceResponse(BaseModel):
     success_rate: int = Field(ge=0, le=100)
 
     class Config:
+        """Configuration for the ServiceResponse model"""
         from_attributes = True
 
 
 class ServiceUpdate(BaseModel):
+    """
+    Schema for service update operations.
+    All fields are optional to allow partial updates of service statuses.
+    """
     employment_assistance: Optional[bool] = None
     life_stabilization: Optional[bool] = None
     retention_services: Optional[bool] = None
@@ -175,5 +201,9 @@ class ServiceUpdate(BaseModel):
 
 
 class ClientListResponse(BaseModel):
+    """
+    Response model for paginated client lists.
+    Contains both the list of clients and the total count.
+    """
     clients: List[ClientResponse]
     total: int
