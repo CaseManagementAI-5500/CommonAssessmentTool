@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
-from ..database import get_db
+from app.database import get_db
 from app.models import User, UserRole
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
@@ -19,7 +19,7 @@ class UserCreate(BaseModel):
     password: str
     role: UserRole
 
-    @field_validator('role')
+    @field_validator("role")
     def validate_role(cls, v):
         if v not in [UserRole.admin, UserRole.case_worker]:
             raise ValueError("Role must be either admin or case_worker")
@@ -54,7 +54,7 @@ def get_password_hash(password: str) -> str:
 
 def authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
     user = db.query(User).filter(User.username == username).first()
-    if not user or not verify_password(password, user.hashed_password):
+    if not user or not verify_password(password, str(user.hashed_password)):
         return None
     return user
 

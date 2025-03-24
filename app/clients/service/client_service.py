@@ -16,6 +16,7 @@ class ClientService:
     Service class handling all client-related database operations and business logic.
     Provides methods for CRUD operations and complex client queries.
     """
+
     @staticmethod
     def get_client(db: Session, client_id: int):
         """Get a specific client by ID"""
@@ -166,9 +167,9 @@ class ClientService:
         """
         query = db.query(Client).join(ClientCase)
 
-        for service_name, status in service_filters.items():
-            if status is not None:
-                filter_criteria = getattr(ClientCase, service_name) == status
+        for service_name, service_status in service_filters.items():
+            if service_status is not None:
+                filter_criteria = getattr(ClientCase, service_name) == service_status
                 query = query.filter(filter_criteria)
 
         try:

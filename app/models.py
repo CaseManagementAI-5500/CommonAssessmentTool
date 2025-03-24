@@ -20,6 +20,7 @@ from app.database import Base
 
 class UserRole(str, enum.Enum):
     """Enum defining possible user roles in the system."""
+
     ADMIN = "admin"
     CASE_WORKER = "case_worker"
 
@@ -29,6 +30,7 @@ class User(Base):
     User model representing system users with authentication and authorization details.
     Includes relationships to client cases and role-based access control.
     """
+
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -46,6 +48,7 @@ class Client(Base):
     Stores demographic information, skills assessment, and various client attributes
     needed for case management and service delivery.
     """
+
     __tablename__ = "clients"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -99,6 +102,7 @@ class ClientCase(Base):
     ClientCase model representing the relationship between clients and users (case workers).
     Tracks various service indicators and success metrics for client case management.
     """
+
     __tablename__ = "client_cases"
 
     client_id = Column(Integer, ForeignKey("clients.id"), primary_key=True)

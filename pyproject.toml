@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 88
-target-version = ['py39']
+target-version = ['py38', 'py39', 'py310']
 
 [build-system]
 requires = ["setuptools>=42", "wheel"]
@@ -9,9 +9,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "CaseManagementAI"
 version = "0.1.0"
-description = "The project description"
+description = "As a developer, I want the backend Python code to be adhere to best practices according Clean CodeLinks to an external site. (e.g. Design Principles, Design Patterns, SOLID, etc) so that current and new developers can better read the codebase and easily make changes. "
+
 authors = [
-    { name="Your Name", email="your.email@example.com" }
+    { name="Zhengpeng Qiu, Brian Yu, Brandon Yu, Siyu Yao"}
 ]
 dependencies = [
     "pylint",

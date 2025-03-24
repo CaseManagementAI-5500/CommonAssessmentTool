@@ -21,7 +21,15 @@ from app.clients.schema import (
     ServiceUpdate,
 )
 
+from app.clients.service.logic import interpret_and_calculate
+from app.clients.schema import PredictionInput
+
 router = APIRouter(prefix="/clients", tags=["clients"])
+
+
+@router.post("/predictions")
+async def predict(data: PredictionInput):
+    return interpret_and_calculate(data.model_dump())
 
 
 @router.get("/", response_model=ClientListResponse)
@@ -35,13 +43,13 @@ async def get_clients(
 ) -> ClientListResponse:
     """
     Retrieve a paginated list of all clients.
-    
+
     Args:
         current_user: Authenticated admin user making the request
         skip: Number of records to skip for pagination
         limit: Maximum number of records to return
         db: Database session
-    
+
     Returns:
         ClientListResponse: Paginated list of clients
     """
@@ -56,12 +64,12 @@ async def get_client(
 ) -> ClientResponse:
     """
     Get a specific client by ID.
-    
+
     Args:
         client_id: Unique identifier of the client
         current_user: Authenticated admin user making the request
         db: Database session
-    
+
     Returns:
         ClientResponse: Client details
     """
@@ -70,8 +78,10 @@ async def get_client(
 
 # For the function with too many arguments, we can create a search parameters class
 
+
 class ClientSearchCriteria(BaseModel):
     """Search criteria for filtering clients"""
+
     employment_status: Optional[bool] = None
     education_level: Optional[int] = None
     age_min: Optional[int] = None
@@ -97,6 +107,7 @@ class ClientSearchCriteria(BaseModel):
     time_unemployed: Optional[int] = None
     need_mental_health_support_bool: Optional[bool] = None
 
+
 @router.get("/search/by-criteria", response_model=List[ClientResponse])
 async def get_clients_by_criteria(
     search_criteria: ClientSearchCriteria = Depends(),
@@ -105,12 +116,12 @@ async def get_clients_by_criteria(
 ) -> List[ClientResponse]:
     """
     Search clients by any combination of criteria.
-    
+
     Args:
         search_criteria: Search parameters for filtering clients
         current_user: Authenticated admin user making the request
         db: Database session
-    
+
     Returns:
         List[ClientResponse]: List of matching clients
     """
@@ -119,6 +130,7 @@ async def get_clients_by_criteria(
 
 class ServiceSearchCriteria(BaseModel):
     """Search criteria for filtering clients by services"""
+
     employment_assistance: Optional[bool] = None
     life_stabilization: Optional[bool] = None
     retention_services: Optional[bool] = None
@@ -126,6 +138,7 @@ class ServiceSearchCriteria(BaseModel):
     employment_related_financial_supports: Optional[bool] = None
     employer_financial_supports: Optional[bool] = None
     enhanced_referrals: Optional[bool] = None
+
 
 @router.get("/search/by-services", response_model=List[ClientResponse])
 async def get_clients_by_services(
@@ -135,12 +148,12 @@ async def get_clients_by_services(
 ) -> List[ClientResponse]:
     """
     Get clients filtered by multiple service statuses.
-    
+
     Args:
         service_criteria: Service-related search parameters
         current_user: Authenticated admin user making the request
         db: Database session
-    
+
     Returns:
         List[ClientResponse]: List of matching clients
     """
@@ -155,12 +168,12 @@ async def get_client_services(
 ) -> List[ServiceResponse]:
     """
     Get all services and their status for a specific client.
-    
+
     Args:
         client_id: Unique identifier of the client
         current_user: Authenticated admin user making the request
         db: Database session
-    
+
     Returns:
         List[ServiceResponse]: List of client services
     """
@@ -177,12 +190,12 @@ async def get_clients_by_success_rate(
 ) -> List[ClientResponse]:
     """
     Get clients with success rate above specified threshold.
-    
+
     Args:
         min_rate: Minimum success rate percentage
         current_user: Authenticated admin user making the request
         db: Database session
-    
+
     Returns:
         List[ClientResponse]: List of clients meeting success rate criteria
     """
@@ -197,12 +210,12 @@ async def get_clients_by_case_worker(
 ) -> List[ClientResponse]:
     """
     Get all clients assigned to a specific case worker.
-    
+
     Args:
         case_worker_id: ID of the case worker
         current_user: Authenticated user making the request
         db: Database session
-    
+
     Returns:
         List[ClientResponse]: List of clients assigned to the case worker
     """
@@ -230,7 +243,7 @@ async def update_client_services(
 ):
     """
     Update the service status and details for a specific client-user pair.
-    
+
     Args:
         client_id: Unique identifier of the client
         user_id: Unique identifier of the user (case worker)
@@ -238,7 +251,7 @@ async def update_client_services(
             for various service types (employment assistance, life stabilization, etc.)
         current_user: Authenticated user making the request (used for authorization)
         db: Database session
-    
+
     Returns:
         ServiceResponse: Updated service details including:
             - Employment assistance status
@@ -249,9 +262,9 @@ async def update_client_services(
             - Employer financial supports status
             - Enhanced referrals status
             - Success rate (if applicable)
-    
+
     Raises:
-        HTTPException: 
+        HTTPException:
             - 404 if client or user not found
             - 403 if user doesn't have permission to update services
             - 400 if service update data is invalid
