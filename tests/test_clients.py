@@ -1,4 +1,3 @@
-import pytest
 from fastapi import status
 
 
@@ -54,9 +53,7 @@ def test_get_clients_by_criteria(client, admin_headers):
         params={"age_min": 15},  # Below minimum age
         headers=admin_headers,
     )
-    assert (
-        response.status_code == status.HTTP_400_BAD_REQUEST
-    )  # Changed from 400
+    assert response.status_code == status.HTTP_400_BAD_REQUEST  # Changed from 400
 
 
 def test_get_clients_by_services(client, admin_headers):
@@ -109,7 +106,7 @@ def test_update_client(client, admin_headers):
     assert response.status_code == status.HTTP_200_OK
     updated_client = response.json()
     assert updated_client["age"] == 26
-    assert updated_client["currently_employed"] == True
+    assert updated_client["currently_employed"] is True
     assert updated_client["time_unemployed"] == 0
 
 

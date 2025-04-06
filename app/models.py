@@ -11,9 +11,9 @@ from sqlalchemy import (
     Boolean,
     ForeignKey,
     CheckConstraint,
-    Enum,
+    # Enum,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from app.database import Base
 
@@ -37,7 +37,8 @@ class User(Base):
     username = Column(String(50), unique=True, nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     hashed_password = Column(String(200), nullable=False)
-    role = Column(Enum(UserRole), nullable=False)
+    role: Mapped[str] = mapped_column(String(20), nullable=False)
+    # role = Column(Enum(UserRole), nullable=False)
 
     cases = relationship("ClientCase", back_populates="user")
 
