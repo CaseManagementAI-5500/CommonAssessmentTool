@@ -1,6 +1,8 @@
 # Use Python 3.11 image as base
 FROM python:3.11
 
+ENV PYTHONUNBUFFERED=1
+
 # Set working directory
 WORKDIR /code
 
