@@ -54,9 +54,7 @@ def test_get_clients_by_criteria(client, admin_headers):
         params={"age_min": 15},  # Below minimum age
         headers=admin_headers,
     )
-    assert (
-        response.status_code == status.HTTP_400_BAD_REQUEST
-    )  # Changed from 400
+    assert response.status_code == status.HTTP_400_BAD_REQUEST  # Changed from 400
 
 
 def test_get_clients_by_services(client, admin_headers):
