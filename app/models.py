@@ -11,7 +11,7 @@ from sqlalchemy import (
     Boolean,
     ForeignKey,
     CheckConstraint,
-    Enum,
+    # Enum,
 )
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
