@@ -1,57 +1,149 @@
-Team TicTech 
+# Team TicTech – Common Assessment Tool Backend
 
-Project -- Feature Development Backend: Create CRUD API's for Client
+## 🎯 Project Goal
 
-User Story
+Create and containerize a backend API to support the CaseManagement service, allowing social workers to retrieve and update client information, assess intervention impacts, and improve employment outcomes using predictive models.
 
-As a user of the backend API's, I want to call API's that can retrieve, update, and delete information of clients who have already registered with the CaseManagment service so that I more efficiently help previous clients make better decisions on how to be gainfully employed.
+---
 
-Acceptance Criteria
-- Provide REST API endpoints so that the Frontend can use them to get information on an existing client.
-- Document how to use the REST API
-- Choose and create a database to hold client information
-- Add tests
+## 🧠 User Story
 
+> As a user of the backend API, I want to call endpoints that can retrieve, update, and delete information of clients who have already registered with the CaseManagment service so that I can more efficiently help them make better decisions on how to be gainfully employed.
 
-This will contain the model used for the project that based on the input information will give the social workers the clients baseline level of success and what their success will be after certain interventions.
+---
 
-The model works off of dummy data of several combinations of clients alongside the interventions chosen for them as well as their success rate at finding a job afterward. The model will be updated by the case workers by inputing new data for clients with their updated outcome information, and it can be updated on a daily, weekly, or monthly basis.
+## ✅ Acceptance Criteria
 
-This also has an API file to interact with the front end, and logic in order to process the interventions coming from the front end. This includes functions to clean data, create a matrix of all possible combinations in order to get the ones with the highest increase of success, and output the results in a way the front end can interact with.
+- Provide REST API endpoints so that the Frontend can use them to get information on existing clients.
+- Document how to use the REST API.
+- Choose and create a database to hold client information.
+- Add tests.
+- Enable the backend to run in a Docker container on any OS (macOS, Windows, Linux).
+- Enable support for Docker Compose.
+- Update README with instructions to run using Docker.
 
--------------------------How to Use-------------------------
-1. In the virtual environment you've created for this project, install all dependencies in requirements.txt (pip install -r requirements.txt)
+---
 
-2. Run the app (uvicorn app.main:app --reload)
+## 🧪 Features
 
-3. Load data into database (python initialize_data.py)
+This project contains:
 
-4. Go to SwaggerUI (http://127.0.0.1:8000/docs)
+- ✅ RESTful FastAPI backend for client management and intervention planning
+- ✅ Predictive ML model based on dummy data
+- ✅ Admin-authenticated endpoints for case workers
+- ✅ Dynamic model switching API (Logistic, Random Forest, Decision Tree)
+- ✅ Docker + Docker Compose support for easy deployment
 
-4. Log in as admin (username: admin password: admin123)
+---
 
-5. Click on each endpoint to use
--Create User (Only users in admin role can create new users. The role field needs to be either "admin" or "case_worker")
+## 🚀 How to Use (Locally Without Docker)
 
--Get clients (Display all the clients that are in the database)
+1. **Create a virtual environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
--Get client (Allow authorized users to search for a client by id. If the id is not in database, an error message will show.)
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
--Update client (Allow authorized users to update a client's basic info by inputting in client_id and providing updated values.)
+3. **Run the app**:
+   ```bash
+   uvicorn app.main:app --reload
+   ```
 
--Delete client (Allow authorized users to delete a client by id. If an id is no longer in the database, an error message will show.)
+4. **Initialize the database with dummy data**:
+   ```bash
+   python initialize_data.py
+   ```
 
--Get clients by criteria (Allow authorized users to get a list of clients who meet a certain combination of criteria.)
+5. **Open the Swagger UI**:
+   - http://127.0.0.1:8000/docs
 
--Get Clients by services (Allow authorized users to get a list of clients who meet a certain combination of service statuses.)
+6. **Login credentials**:
+   - Username: `admin`
+   - Password: `admin123`
 
--Get clients services (Allow authorized users to view a client's services' status.)
+---
 
--Get clients by success rate (Allow authorized users to search for clients whose cases have a success rate beyond a certain number.)
+## 🔐 Available Endpoints (Swagger UI)
 
--Get clients by case worker (Allow users to view which clients are assigned to a specific case worker.)
+- **Create User**
+- **Get Clients**
+- **Get Client by ID**
+- **Update Client**
+- **Delete Client**
+- **Get Clients by Criteria**
+- **Get Clients by Services**
+- **Get Client Services**
+- **Get Clients by Success Rate**
+- **Get Clients by Case Worker**
+- **Update Client Services**
+- **Create Case Assignment**
+- **ML Model APIs**:
+  - `GET /ml/models` – List available models
+  - `GET /ml/model` – Get current model
+  - `POST /ml/model` – Switch model
+  - `POST /ml/predict` – Predict success rate and interventions
 
--Update client services (Allow users to update the service status of a case.)
+---
 
--Create case assignment (Allow authorized users to create a new case assignment.)
+## 🐳 Running with Docker
 
+> Use Docker to containerize and run the backend on any platform (macOS, Windows, Linux)
+
+### 🧱 Build Docker Image
+```bash
+docker build -t common-assessment-tool-backend .
+```
+
+### ▶️ Run with Docker
+```bash
+docker run -p 8000:8000 common-assessment-tool-backend
+```
+
+Then visit:  
+http://localhost:8000/docs
+
+---
+
+## ⚙️ Running with Docker Compose
+
+> Recommended for managing containers easily
+
+### 🛠 Start the app
+```bash
+docker-compose up --build
+```
+
+### 🛑 Stop the app
+```bash
+docker-compose down
+```
+
+---
+
+## 🗂 .dockerignore (Optional but Recommended)
+
+To speed up Docker builds, include a `.dockerignore` file:
+```
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.env
+.git/
+.DS_Store
+*.sqlite3
+```
+
+---
+
+## 📌 Notes
+
+- This backend supports integration with a separate Vue or React frontend.
+- The ML models can be retrained using the `service/model.py` module.
+- Default database uses SQLite (`sql_app.db`), which is ideal for local testing.
