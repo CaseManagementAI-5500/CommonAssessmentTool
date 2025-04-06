@@ -1,4 +1,3 @@
-import pytest
 from fastapi import status
 
 
@@ -107,7 +106,7 @@ def test_update_client(client, admin_headers):
     assert response.status_code == status.HTTP_200_OK
     updated_client = response.json()
     assert updated_client["age"] == 26
-    assert updated_client["currently_employed"] == True
+    assert updated_client["currently_employed"] is True
     assert updated_client["time_unemployed"] == 0
 
 
