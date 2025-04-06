@@ -55,7 +55,7 @@ def test_get_clients_by_criteria(client, admin_headers):
         headers=admin_headers,
     )
     assert (
-        response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        response.status_code == status.HTTP_400_BAD_REQUEST
     )  # Changed from 400
 
 
