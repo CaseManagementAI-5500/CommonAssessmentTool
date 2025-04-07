@@ -87,6 +87,11 @@ def convert_text(text_data: str):
     Returns:
         int: Converted numerical value
     """
+
+    # If the input is the placeholder 'string', use the default value
+    if text_data == "string":
+        return 0  # Set a safe default value
+
     categorical_mappings = [
         {"": 0, "true": 1, "false": 0, "no": 0, "yes": 1, "No": 0, "Yes": 1},
         {
@@ -134,6 +139,7 @@ def convert_text(text_data: str):
         if text_data in category:
             return category[text_data]
 
+    # return int(text_data) if text_data.isnumeric() else 0
     return int(text_data) if text_data.isnumeric() else text_data
 
 
