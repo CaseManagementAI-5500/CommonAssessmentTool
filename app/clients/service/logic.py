@@ -89,7 +89,7 @@ def convert_text(text_data: str):
     """
 
     # If the input is the placeholder 'string', use the default value
-    if text_data == 'string':
+    if text_data == "string":
         return 0  # Set a safe default value
 
     categorical_mappings = [
