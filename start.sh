@@ -12,5 +12,10 @@ if [ ! -f "/code/app/clients/service/models/random_forest.pkl" ]; then
     echo "Models initialized successfully!"
 fi
 
+# Initialize database if admin user doesn't exist
+echo "Checking if database needs initialization..."
+python -c "from initialize_data import initialize_database; initialize_database()"
+echo "Database initialization check complete."
+
 # Start the application
 exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
