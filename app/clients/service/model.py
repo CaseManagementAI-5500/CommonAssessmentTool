@@ -1,77 +1,25 @@
 """
-Model training module for the Common Assessment Tool.
-Handles the preparation, training, and saving of the prediction model.
+Module for training and saving various machine learning models.
+Includes Random Forest, Linear Regression, and Gradient Boosting models.
 """
 
 # Standard library imports
+import os
 import pickle
-
-# Third-party imports
-import numpy as np
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.neural_network import MLPRegressor
 
+# Constants
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(CURRENT_DIR, "data_commontool.csv")
+MODELS_DIR = os.path.join(CURRENT_DIR, "models")
 
-def prepare_models():
-    """
-    Prepare and train the Random Forest model using the dataset.
-
-    Returns:
-        RandomForestRegressor: Trained model for predicting success rates
-    """
-    # Load dataset
-    data = pd.read_csv("data_commontool.csv")
-    # Define feature columns
-    feature_columns = [
-        "age",  # Client's age
-        "gender",  # Client's gender (bool)
-        "work_experience",  # Years of work experience
-        "canada_workex",  # Years of work experience in Canada
-        "dep_num",  # Number of dependents
-        "canada_born",  # Born in Canada
-        "citizen_status",  # Citizenship status
-        "level_of_schooling",  # Highest level achieved (1-14)
-        "fluent_english",  # English fluency scale (1-10)
-        "reading_english_scale",  # Reading ability scale (1-10)
-        "speaking_english_scale",  # Speaking ability scale (1-10)
-        "writing_english_scale",  # Writing ability scale (1-10)
-        "numeracy_scale",  # Numeracy ability scale (1-10)
-        "computer_scale",  # Computer proficiency scale (1-10)
-        "transportation_bool",  # Needs transportation support (bool)
-        "caregiver_bool",  # Is primary caregiver (bool)
-        "housing",  # Housing situation (1-10)
-        "income_source",  # Source of income (1-10)
-        "felony_bool",  # Has a felony (bool)
-        "attending_school",  # Currently a student (bool)
-        "currently_employed",  # Currently employed (bool)
-        "substance_use",  # Substance use disorder (bool)
-        "time_unemployed",  # Years unemployed
-        "need_mental_health_support_bool",  # Needs mental health support (bool)
-    ]
-    # Define intervention columns
-    intervention_columns = [
-        "employment_assistance",
-        "life_stabilization",
-        "retention_services",
-        "specialized_services",
-        "employment_related_financial_supports",
-        "employer_financial_supports",
-        "enhanced_referrals",
-    ]
-    # Combine all feature columns
-    all_features = feature_columns + intervention_columns
-    # Prepare training data
-    features = np.array(data[all_features])  # Changed from X to features
-    targets = np.array(data["success_rate"])  # Changed from y to targets
-    # Split the dataset
-    features_train, _, targets_train, _ = train_test_split(  # Removed unused variables
-        features, targets, test_size=0.2, random_state=42
-    )
-    # Initialize and train the model
-    model = RandomForestRegressor(n_estimators=100, random_state=42)
-    model.fit(features_train, targets_train)
-    return model
+# Ensure models directory exists
+os.makedirs(MODELS_DIR, exist_ok=True)
 
 
 def save_model(model, filename="model.pkl"):
@@ -82,8 +30,16 @@ def save_model(model, filename="model.pkl"):
         model: Trained model to save
         filename (str): Name of the file to save the model to
     """
-    with open(filename, "wb") as model_file:
+    if not filename.endswith(".pkl"):
+        filename = f"{filename}.pkl"
+
+    # Save to models directory
+    model_path = os.path.join(MODELS_DIR, filename)
+
+    with open(model_path, "wb") as model_file:
         pickle.dump(model, model_file)
+
+    print(f"Model saved to {model_path}")
 
 
 def load_model(filename="model.pkl"):
@@ -100,11 +56,111 @@ def load_model(filename="model.pkl"):
         return pickle.load(model_file)
 
 
+def prepare_training_data():
+    """
+    Prepare training data from CSV file.
+
+    Returns:
+        tuple: (features_train, targets_train)
+    """
+    # Load and preprocess the data
+    data = pd.read_csv(DATA_FILE)
+
+    # Extract features and target
+    features = data.drop(columns=["success_rate"])
+    targets = np.array(data["success_rate"])  # Changed from y to targets
+
+    # Split the dataset
+    features_train, _, targets_train, _ = train_test_split(
+        features, targets, test_size=0.2, random_state=42
+    )
+
+    return features_train, targets_train
+
+
+def train_model_rf(features_train, targets_train):
+    """
+    Train the Random Forest model using the dataset.
+
+    Returns:
+        RandomForestRegressor: Trained model for predicting success rates
+    """
+    # Initialize and train the model
+    model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model.fit(features_train, targets_train)
+
+    return model
+
+
+def train_model_lr(features_train, targets_train):
+    """
+    Train the Linear Regression model using the dataset.
+
+    Returns:
+        LinearRegression: Trained model for predicting success rates
+    """
+    # Initialize and train the model
+    model = LinearRegression()
+    model.fit(features_train, targets_train)
+
+    return model
+
+
+def train_model_gb(features_train, targets_train):
+    """
+    Train the Gradient Boost model using the dataset.
+
+    Returns:
+        GradientBoostingRegressor: Trained model for predicting success rates
+    """
+    # Initialize and train the model
+    model = GradientBoostingRegressor(
+        n_estimators=100, learning_rate=0.1, random_state=42
+    )
+    model.fit(features_train, targets_train)
+
+    return model
+
+
+def train_model_mlp(features_train, targets_train):
+    """
+    Train the Neural Network (MLP) model using the dataset.
+
+    Returns:
+        MLPRegressor: Trained model for predicting success rates
+    """
+    # Initialize and train the model
+    model = MLPRegressor(
+        hidden_layer_sizes=(100, 50),
+        activation="relu",
+        solver="adam",
+        alpha=0.0001,
+        batch_size="auto",
+        learning_rate="constant",
+        max_iter=500,
+        random_state=42,
+    )
+    model.fit(features_train, targets_train)
+
+    return model
+
+
 def main():
     """Main function to train and save the model."""
+    features_train, targets_train = prepare_training_data()
+
     print("Starting model training...")
-    model = prepare_models()
-    save_model(model)
+
+    # Train the models
+    model_rf = train_model_rf(features_train, targets_train)
+    model_lr = train_model_lr(features_train, targets_train)
+    model_gb = train_model_gb(features_train, targets_train)
+
+    # Save the models
+    save_model(model_rf, filename="random_forest.pkl")
+    save_model(model_lr, filename="linear_regression.pkl")
+    save_model(model_gb, filename="gradient_boost.pkl")
+
     print("Model training completed and saved successfully.")
 
 

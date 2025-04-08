@@ -9,8 +9,10 @@ import os
 # import json
 from itertools import product
 
+# Local imports
+from app.clients.service.model_factory import load_model
+
 # Third-party imports
-import pickle
 import numpy as np
 
 # Constants
@@ -24,11 +26,11 @@ COLUMN_INTERVENTIONS = [
     "Enhanced Referrals for Skills Development",
 ]
 
-# Load model
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(CURRENT_DIR, "model.pkl")
-with open(MODEL_PATH, "rb") as model_file:
-    MODEL = pickle.load(model_file)
+# # Load model
+# CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+# MODEL_PATH = os.path.join(CURRENT_DIR, "model.pkl")
+# with open(MODEL_PATH, "rb") as model_file:
+#     MODEL = pickle.load(model_file)
 
 
 def clean_input_data(input_data):
@@ -225,17 +227,39 @@ def interpret_and_calculate(input_data):
     Returns:
         dict: Processed results with recommendations
     """
+    # Get the current model
+    # Load the current model using the factory
+    model = load_model()
+
     raw_data = clean_input_data(input_data)
     baseline_row = get_baseline_row(raw_data).reshape(1, -1)
     intervention_rows = create_matrix(raw_data)
-    baseline_prediction = MODEL.predict(baseline_row)
-    intervention_predictions = MODEL.predict(intervention_rows).reshape(-1, 1)
+
+    # Obtain the correct feature name
+    import pandas as pd
+
+    data_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "data_commontool.csv"
+    )
+    feature_names = (
+        pd.read_csv(data_path).drop(columns=["success_rate"]).columns.tolist()
+    )
+
+    # Convert a numpy array to a DataFrame
+    baseline_df = pd.DataFrame(baseline_row, columns=feature_names)
+    intervention_df = pd.DataFrame(intervention_rows, columns=feature_names)
+
+    # Using DataFrame for prediction
+    baseline_prediction = model.predict(baseline_df)
+    intervention_predictions = model.predict(intervention_df).reshape(-1, 1)
+
     result_matrix = np.concatenate(
         (intervention_rows, intervention_predictions), axis=1
     )
     result_order = result_matrix[:, -1].argsort()
     result_matrix = result_matrix[result_order]
     top_results = result_matrix[-3:, -8:]
+
     return process_results(baseline_prediction, top_results)
 
 

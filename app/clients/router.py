@@ -2,10 +2,9 @@
 Router module for client-related endpoints.
 Handles all HTTP requests for client operations including create, read, update, and delete.
 """
-
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import HTTPException, APIRouter, Depends, Query, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -20,6 +19,11 @@ from app.clients.schema import (
     ServiceResponse,
     ServiceUpdate,
 )
+from app.clients.service.model_factory import (
+    get_current_model_name,
+    set_current_model,
+    get_available_models,
+)
 
 from app.clients.service.logic import interpret_and_calculate
 from app.clients.schema import PredictionInput
@@ -30,6 +34,33 @@ router = APIRouter(prefix="/clients", tags=["clients"])
 @router.post("/predictions")
 async def predict(data: PredictionInput):
     return interpret_and_calculate(data.model_dump())
+
+
+@router.get("/models/available")
+async def list_available_models(current_user: User = Depends(get_current_user)):
+    """Retrieve the list of all available models"""
+    return {"models": get_available_models(), "current_model": get_current_model_name()}
+
+
+@router.get("/models/current")
+async def get_current_model(current_user: User = Depends(get_current_user)):
+    """Retrieve the current model name being used"""
+    return {"name": get_current_model_name()}
+
+
+@router.put("/models/switch/{model_name}")
+async def switch_model(
+    model_name: str,
+    current_user: User = Depends(get_admin_user),
+):
+    """Switch to a different prediction model"""
+    try:
+        new_model = set_current_model(model_name)
+        return {"name": new_model}
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
 @router.get("/", response_model=ClientListResponse)
