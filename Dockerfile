@@ -15,6 +15,12 @@ RUN pip install --no-cache-dir -r /code/requirements.txt
 # Copy the rest of your application
 COPY . /code/
 
+RUN chmod +x /code/start.sh
+
+CMD ["/code/start.sh"]
+
+
+
 # Expose the port your app runs on
 EXPOSE 8000
 
