@@ -5,6 +5,8 @@ on:
     branches: [master, main]
   pull_request:
     branches: [master, main]
+  release:
+    types: [published]
 
 jobs:
   test:
@@ -28,20 +30,25 @@ jobs:
           python -m pytest tests/
 
   deploy:
-    needs: test # This ensures deploy only runs if tests pass
+    needs: test
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker build -t common-assessment-tool .
-
-      - name: Run Docker container
+      - name: Set up SSH Key
         run: |
-          docker run -d -p 8000:8000 common-assessment-tool
-          sleep 10  # Wait for container to start
+          echo "${{ secrets.CD_SSH_KEY }}" > private_key
+          chmod 600 private_key
 
-      - name: Test Docker container
+      - name: Deploy to EC2 server
         run: |
-          curl http://localhost:8000/docs
+          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.CD_SSH_USER }}@${{ secrets.CD_SSH_HOST }} << 'EOF'
+            cd ~/app
+            git pull origin main
+            docker stop backend || true
+            docker rm backend || true
+            docker build -t common-assessment-tool-backend .
+            docker run -d --name backend -p 8000:8000 common-assessment-tool-backend
+          EOF

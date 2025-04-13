@@ -59,12 +59,21 @@ This project contains:
    python initialize_data.py
    ```
 
-5. **Open the Swagger UI**:
-   - http://127.0.0.1:8000/docs
+---
 
-6. **Login credentials**:
-   - Username: `admin`
-   - Password: `admin123`
+## 🌐 Public Endpoint (Deployed)
+
+You can now access the live Swagger UI at:
+🔗 http://18.219.241.6:8000/docs
+
+This backend is hosted on an AWS EC2 instance. It is running in a Docker container and automatically serves the FastAPI documentation on port `8000`.
+
+### 🧪 Login Details (Admin for testing)
+
+- **Username:** `admin`
+- **Password:** `admin123`
+
+Use these credentials to test authorized routes in Swagger UI.
 
 ---
 
