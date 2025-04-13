@@ -12,6 +12,10 @@ if [ ! -f "/code/app/clients/service/models/random_forest.pkl" ]; then
     echo "Models initialized successfully!"
 fi
 
+# Create database tables first
+echo "Creating database tables..."
+python -c "from app.database import Base, engine; Base.metadata.create_all(bind=engine); print('Database tables created successfully')"
+
 # Initialize database if admin user doesn't exist
 echo "Checking if database needs initialization..."
 python -c "from initialize_data import initialize_database; initialize_database()"
