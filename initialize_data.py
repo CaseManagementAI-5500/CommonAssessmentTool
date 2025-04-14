@@ -1,11 +1,11 @@
 import pandas as pd
-from app.database import SessionLocal
+from app.database import Base, engine, SessionLocal
 from app.models import Client, User, ClientCase, UserRole
 from app.auth.router import get_password_hash
 
 
 def initialize_database():
-    print("Starting database initialization...")
+    print("Starting database initialization...")  
     db = SessionLocal()
     try:
         # Create admin user if doesn't exist

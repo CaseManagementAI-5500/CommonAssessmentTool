@@ -4,6 +4,12 @@
 mkdir -p /code/app/clients/service/models
 mkdir -p /code/data
 
+
+# Create database tables first
+echo "Creating database tables..."
+python -c "from app.database import Base, engine; Base.metadata.create_all(bind=engine); print('Database tables created successfully')"
+
+
 # Check if models need to be initialized
 if [ ! -f "/code/app/clients/service/models/random_forest.pkl" ]; then
     echo "Initializing models..."
@@ -12,10 +18,6 @@ if [ ! -f "/code/app/clients/service/models/random_forest.pkl" ]; then
     python -c "from app.clients.service.model import main; main()"
     echo "Models initialized successfully!"
 fi
-
-# Create database tables first
-echo "Creating database tables..."
-python -c "from app.database import Base, engine; Base.metadata.create_all(bind=engine); print('Database tables created successfully')"
 
 # Initialize database if admin user doesn't exist
 echo "Checking if database needs initialization..."
