@@ -46,9 +46,27 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key ec2-user@18.219.241.6 << 'EOF'
             cd ~/app
-            git pull origin main
-            docker stop backend || true
-            docker rm backend || true
-            docker build -t common-assessment-tool-backend .
-            docker run -d --name backend -p 8000:8000 common-assessment-tool-backend
+            
+            if [ -d "CommonAssessmentTool" ]; then
+              echo "Updating existing repository..."
+              cd CommonAssessmentTool
+              git fetch --all
+              git reset --hard origin/main
+            else
+              echo "Cloning repository..."
+              git clone https://github.com/CaseManagementAI-5500/CommonAssessmentTool.git
+              cd CommonAssessmentTool
+            fi
+            
+            if [ ! -f "docker-compose.yml" ] || [ ! -f "Dockerfile" ]; then
+              echo "ERROR: Required files are missing!"
+              ls -la
+              exit 1
+            fi
+            
+            echo "Building and starting containers..."
+            docker-compose down
+            docker-compose up --build -d
+            
+            echo "Deployment completed successfully!"
           EOF
