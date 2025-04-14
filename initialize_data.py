@@ -1,5 +1,5 @@
 import pandas as pd
-from app.database import Base, engine, SessionLocal
+from app.database import SessionLocal
 from app.models import Client, User, ClientCase, UserRole
 from app.auth.router import get_password_hash
 
