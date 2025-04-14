@@ -2,6 +2,7 @@
 
 # Ensure the models directory exists
 mkdir -p /code/app/clients/service/models
+mkdir -p /code/data
 
 # Check if models need to be initialized
 if [ ! -f "/code/app/clients/service/models/random_forest.pkl" ]; then
