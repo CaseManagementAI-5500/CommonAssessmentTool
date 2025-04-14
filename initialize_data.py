@@ -5,7 +5,7 @@ from app.auth.router import get_password_hash
 
 
 def initialize_database():
-    print("Starting database initialization...")  
+    print("Starting database initialization...")
     db = SessionLocal()
     try:
         # Create admin user if doesn't exist
