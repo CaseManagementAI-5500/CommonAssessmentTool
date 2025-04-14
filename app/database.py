@@ -2,14 +2,17 @@
 Database configuration module for the Common Assessment Tool.
 Handles database connection and session management using SQLAlchemy.
 """
-
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Here is where the database is located
-SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
-# SQLALCHEMY_DATABASE_URL = "sqlite:///./data/sql_app.db"
+
+if os.path.exists("./test.db") or "pytest" in os.getenv("PYTHONPATH", ""):
+    SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"  # 测试环境
+else:
+    SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"  # 生产环境
 
 # Open up a connection so that we are able to use the database
 engine = create_engine(

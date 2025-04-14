@@ -2,7 +2,7 @@
 
 # Ensure the models directory exists
 mkdir -p /code/app/clients/service/models
-# mkdir -p /code/data
+mkdir -p /code/data
 
 
 # Create database tables first
