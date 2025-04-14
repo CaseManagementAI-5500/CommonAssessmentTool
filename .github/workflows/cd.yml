@@ -44,7 +44,7 @@ jobs:
 
       - name: Deploy to EC2 server
         run: |
-          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.CD_SSH_USER }}@${{ secrets.CD_SSH_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i private_key ec2-user@18.219.241.6 << 'EOF'
             cd ~/app
             git pull origin main
             docker stop backend || true
